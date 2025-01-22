@@ -1,7 +1,7 @@
-name: "my-website"
+name: "Biol6100Homework"
 output_dir: docs
 navbar:
-  title: "My Website"
+  title: "Noah Mattheis BIOL6100 Homework Hub"
   left:
     - text: "Home"
       href: index.html
