@@ -9,6 +9,6 @@ output:
 This website is dedicated to housing all the code/projects that are assigned as homework
 for BIOL6100
 
-My overall GitHub repository: [NoahMattheis](https://github.com/NoahMattheis)
+My overall GitHub repository can be found here [NoahMattheis](https://github.com/NoahMattheis)
 
-My BIOL6100 Class Notes repository: [Class Notes](https://noahmattheis.github.io/Bio6100ClassNotes/) 
+My BIOL6100 Class Notes repository can be found here [Class Notes](https://noahmattheis.github.io/Bio6100ClassNotes/) 
