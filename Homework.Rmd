@@ -1,0 +1,25 @@
+---
+title: "Homework"
+author: "Noah W.K. Mattheis"
+date: "2025-01-22"
+output: 
+  html_document: 
+    highlight: tango
+    theme: cosmo
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# Homework Links
+
+
+#### Week 1
+
+
+#### Week 2
+
+
+#### Week 3
