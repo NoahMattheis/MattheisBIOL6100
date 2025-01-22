@@ -23,7 +23,8 @@ knitr::opts_chunk$set(echo = TRUE)
 #### Week 2
 [Homework 2](https://noahmattheis.github.io/MattheisBIOL6100/index.html)
 
-[Homework 21](Homework2.html)
+For some reason this link won't show, let's see 
+[This link plz show](Homework2.html)
 
 
 #### Week 3
