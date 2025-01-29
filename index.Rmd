@@ -5,3 +5,16 @@ output:
     highlight: tango
     theme: cosmo
 ---
+
+Hello! Welcome to my website for housing code/assignments done in Computational Biology 6100
+
+My name is Noah Mattheis and I am current  M.S. Pharmacology student at UVM. 
+My goal is to get involved with Alzheimers Disease/Drug research. I am curious about
+the brain, neurodegeneration, neurovascular coupling, and understanding the brain as whole. 
+Fun fact about me - I love to paint! I enjoy painting and drawing people/portraits and drawing hands as well (like the guy from Titanic).
+
+I am also an anime nerd, well nerd in general, as you may notice from comments in my code if you read along. 
+
+If you would like to see more of my work, you can click on the "About" tab to see my other repository for class notes, and the "Homework" tab to see the current code I have worked on for BIO6100.
+
+To whoever is reading this, I hope you have a great day and feel free to join me along my coding journey! 

@@ -19,12 +19,15 @@ knitr::opts_chunk$set(echo = TRUE)
 #### Week 1
 [Homework 1](https://github.com/NoahMattheis)
 
+This assignment was about setting up GitHub Page
+
 
 #### Week 2
 [Homework 2](https://noahmattheis.github.io/MattheisBIOL6100/index.html)
 
-For some reason this link won't show, let's see 
-[This link plz show](Homework2.html)
+[Homework 21](Homework2.html)
 
+This assignment was about setting up links to the website - both links to another website and links to other RMD/HTML pages made within the project
 
 #### Week 3
+
