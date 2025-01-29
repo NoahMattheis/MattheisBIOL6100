@@ -30,4 +30,5 @@ This assignment was about setting up GitHub Page
 This assignment was about setting up links to the website - both links to another website and links to other RMD/HTML pages made within the project
 
 #### Week 3
+[Homework 3](Homework3.html)
 

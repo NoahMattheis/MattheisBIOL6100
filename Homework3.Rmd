@@ -1,0 +1,236 @@
+---
+title: "Homework3"
+author: "Noah W.K. Mattheis"
+date: "2025-01-29"
+output: html_document
+---
+
+# Regex Work/Example of Usage
+```
+1.
+I used [ ]{2,} in the find what section to look for areas with spaces >2
+This way it does not include "First String" and put a comma between those words
+I then used "," in Replace with to convert this section of words to be ready for csv
+
+Find what: [ ]{2,}
+Replace with: ,
+
+Given: 
+First String    Second      1.22      3.4
+Second          More Text   1.555555  2.2220
+Third           x           3         124
+
+Result:
+First String,Second,1.22,3.4
+Second,More Text,1.555555,2.2220
+Third,x,3,124
+
+```
+```
+2.
+Given:
+Ballif, Bryan, University of Vermont
+Ellison, Aaron, Harvard Forest
+Record, Sydne, Bryn Mawr
+
+Result:
+Bryan Ballif (University of Vermont)
+Aaron Ellison (Harvard Forest)
+Sydne Record (Bryn Mawr)
+
+
+Regex used: 
+Find what: (\w+), (\w+),\s((.)*)
+Replace with: \2 \1 \(\3\)
+
+In this regex, I am finding the first word before the comma, the second word after the comma, and 
+any amount of words after the second comma. This allows me to capture Univerity of Vermont
+and Harvard Forest even when they have different amount of spaces. I then
+replaced the text using grouping to return reorderd first and second words, with third group
+of words in parathenses.
+
+```
+```
+3.
+
+Given: 
+0001 Georgia Horseshoe.mp3 0002 Billy In The Lowground.mp3 0003 Winder Slide.mp3 0004 Walking Cane.mp3
+
+Result:
+0001 Georgia Horseshoe.mp3
+0002 Billy In The Lowground.mp3
+0003 Winder Slide.mp3
+0004 Walking Cane.mp3
+
+Find what: (?<=.mp3)(\s)
+Replace with: \n
+
+In this question, were looking for the first space preceded by '.mp3'
+We then replace that space with a new line to get everything on separate lines
+
+```
+```
+4.
+
+Given: 
+0001 Georgia Horseshoe.mp3
+0002 Billy In The Lowground.mp3
+0003 Winder Slide.mp3
+0004 Walking Cane.mp3
+
+Result:
+Georgia Horseshoe_0001.mp3
+Billy In The Lowground_0002.mp3
+Winder Slide_0003.mp3
+Walking Cane_0004.mp3
+
+Find what: (\d+) ([^.mp3]*)
+Replace with: \2_\1
+
+In this section, I searched for the digits for one group, and all the words between the digits and '.mp3'
+After that, I swapped the groups in replace and included a '_' for the digit group to be placed after the name
+
+```
+```
+5.
+
+Given:
+Camponotus,pennsylvanicus,10.2,44
+Camponotus,herculeanus,10.5,3
+Myrmica,punctiventris,12.2,4
+Lasius,neoniger,3.3,55
+
+Result:
+C_pennsylvanicus,44
+C_herculeanus,3
+M_punctiventris,4
+L_neoniger,55
+
+Find what: (\w)\w+,(\w+),\d+.\d+,(\d+)
+Replace with: \1_\2,\3
+
+In this section I searched for the whole string and group the first character,
+the second word, and the last digit
+I then replaced with the first group, returning the first character, with an '_', followed
+by the second word in the find, and then added the last digit as well.
+
+```
+```
+6.
+Given:
+Camponotus,pennsylvanicus,10.2,44
+Camponotus,herculeanus,10.5,3
+Myrmica,punctiventris,12.2,4
+Lasius,neoniger,3.3,55
+
+Result:
+C_penn,44
+C_herc,3
+M_punc,4
+L_neon,55
+
+Find what: (\w)\w+,(.{4})\w+,\d+.\d+,(\d+)
+Replace with: \1_\2,\3
+
+Similar to the last question, but instead our new first group is only 
+the first 4 characters of the second word. This way when we do the same
+replacement as before, we only get the first four characters of the second 
+word, and not the whole word.
+
+```
+```
+7.
+Given:
+Camponotus,pennsylvanicus,10.2,44
+Camponotus,herculeanus,10.5,3
+Myrmica,punctiventris,12.2,4
+Lasius,neoniger,3.3,55
+
+Result:
+Campen, 44, 10.2
+Camher, 3, 10.5
+Myrpun, 4, 12.2
+Lasneo, 55, 3.3
+
+Find what: (.{3})\w+,(.{3})\w+,(\d+.\d+),(\d+)
+Replace with: \1\2, \4, \3
+
+Similar to the previous two quesitons, but now our groups of focus are 
+the first 3 characters of each word, the final digit from original data, 
+and ending with the rational number
+
+```
+```
+8.
+
+Given: 
+id	target_name	pathogen_binary	sampling_date	site_code	field_id	bombus_spp	host_plant	bee_caste	sampling_event	pathogen_load
+1	BQCV	1	9/9/2020	BOST	6	imp*atiens	solidago	worker 	4	2414168.805
+3	BQCV	NA	9/10/2020	MUDGE	18	impatiens	c!rown vetch	worker 	4	760793.2324
+4	BQCV	NA	9/10/2020	MUDGE	11	im&patiens	c$rown vetch	worker	4	0
+5	BQCV	NA	9/9/2020	BOST	11	impatiens	sol)idago	male 	4	0
+6	BQCV	NA	9/10/2020	CIND	14	-i@mp#a^tiens	k*no%t w%eed	worker 	4	124236.7921
+8	BQCV	NA	9/10/2020	MUDGE	4	impatiens	crown v$et(ch	worker	4	413814.5638
+10	BQCV	1	9/10/2020	CIND	13	impatien$s	red clover	worker	4	1028831.605
+11	BQCV	NA	7/7/2020	BOST	38	impatiens	red clover	worker	2	307696378.8
+12	BQCV	NA	9/10/2020	MUDGE	5	_imp*atiens	c+rown vetch	worker	4	0
+13	BQCV	1	9/9/2020	BOST	12	impatien+s	solid#ago	male	4	311873.0526
+15	BQCV	0	9/9/2020	BOST	18	_impatiens	solidag)o	worker 	4	0
+16	BQCV	NA	9/9/2020	BOST	23	impati+e(ns	s!olidago	male	4	1674951.391
+17	BQCV	NA	9/10/2020	CIND	20	impa#tiens	red cl$over	worker	4	3214026.976
+18	BQCV	1	9/10/2020	CIND	11	i^m+patiens	bi_rdsfoo_t	worker 	4	995592.63
+19	BQCV	NA	9/10/2020	CIND	17	i%mpatiens	red+ @clover	worker	4	0
+20	BQCV	1	9/10/2020	CIND	16	imp(atiens	#red c_lover	worker	4	200804.8542
+21	BQCV	1	9/9/2020	BOST	17	impatiens	solid@ago	worker 	4	228085.8104
+22	BQCV	1	9/9/2020	BOST	7	impati^ens	solidago	worker	4	7261151.315
+23	BQCV	NA	7/7/2020	COL	22	)impati^ens	red clov#er	worker 	2	817906.8276
+24	BQCV	1	7/7/2020	BOST	45	impatiens	red_ cl)over	worker	2	858658.6884
+
+Result: Clean this baby
+
+First part: Replacing the NAs with 0
+
+Find what: \bNA\b
+Replace with: 0
+
+This regex will use boundary catching to isolate the search of NA, as we dont want to include NA that is also in the word name
+We then replace this value with 0
+
+Second part: Getting rid of special characters in bombus_spp and host_plant column
+
+Find what: [^,/.a-zA-Z\d\s:]
+Replace with: (leave blank)
+
+Note: Replaces underscores in column names as well, unsure how to avoid that at the moment but easier to modify column names then an entire sheet
+
+Third and final part: Get rid of unneccessary white spaces
+
+Find what: [ ]
+Replace with: (leave blank)
+
+This will get rid of all blank spaces, now the data is clean!
+
+Result:
+id	targetname	pathogenbinary	samplingdate	sitecode	fieldid	bombusspp	hostplant	beecaste	samplingevent	pathogenload
+1	BQCV	1	9/9/2020	BOST	6	impatiens	solidago	worker	4	2414168.805
+3	BQCV	0	9/10/2020	MUDGE	18	impatiens	crownvetch	worker	4	760793.2324
+4	BQCV	0	9/10/2020	MUDGE	11	impatiens	crownvetch	worker	4	0
+5	BQCV	0	9/9/2020	BOST	11	impatiens	solidago	male	4	0
+6	BQCV	0	9/10/2020	CIND	14	impatiens	knotweed	worker	4	124236.7921
+8	BQCV	0	9/10/2020	MUDGE	4	impatiens	crownvetch	worker	4	413814.5638
+10	BQCV	1	9/10/2020	CIND	13	impatiens	redclover	worker	4	1028831.605
+11	BQCV	0	7/7/2020	BOST	38	impatiens	redclover	worker	2	307696378.8
+12	BQCV	0	9/10/2020	MUDGE	5	impatiens	crownvetch	worker	4	0
+13	BQCV	1	9/9/2020	BOST	12	impatiens	solidago	male	4	311873.0526
+15	BQCV	0	9/9/2020	BOST	18	impatiens	solidago	worker	4	0
+16	BQCV	0	9/9/2020	BOST	23	impatiens	solidago	male	4	1674951.391
+17	BQCV	0	9/10/2020	CIND	20	impatiens	redclover	worker	4	3214026.976
+18	BQCV	1	9/10/2020	CIND	11	impatiens	birdsfoot	worker	4	995592.63
+19	BQCV	0	9/10/2020	CIND	17	impatiens	redclover	worker	4	0
+20	BQCV	1	9/10/2020	CIND	16	impatiens	redclover	worker	4	200804.8542
+21	BQCV	1	9/9/2020	BOST	17	impatiens	solidago	worker	4	228085.8104
+22	BQCV	1	9/9/2020	BOST	7	impatiens	solidago	worker	4	7261151.315
+23	BQCV	0	7/7/2020	COL	22	impatiens	redclover	worker	2	817906.8276
+24	BQCV	1	7/7/2020	BOST	45	impatiens	redclover	worker	2	858658.6884
+
+```
