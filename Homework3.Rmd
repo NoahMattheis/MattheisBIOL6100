@@ -2,7 +2,10 @@
 title: "Homework3"
 author: "Noah W.K. Mattheis"
 date: "2025-01-29"
-output: html_document
+output: 
+  html_document: 
+    highlight: tango
+    theme: cosmo
 ---
 
 # Regex Work/Example of Usage
