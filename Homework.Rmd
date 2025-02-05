@@ -32,3 +32,10 @@ This assignment was about setting up links to the website - both links to anothe
 #### Week 3
 [Homework 3](Homework3.html)
 
+This assignment is based around utilizing RegEx expressions for lists and data sets
+
+#### Week 4
+[Homework 4](Homework4.html)
+
+This assignment is based around manipulation and understanding of Atomic Vectors/Lists
+
