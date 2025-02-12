@@ -2,7 +2,10 @@
 title: "Homework5"
 author: "Noah W.K. Mattheis"
 date: "2025-02-12"
-output: html_document
+output: 
+  html_document: 
+    highlight: tango
+    theme: cosmo
 ---
 
 ```{r setup, include=FALSE}
@@ -55,7 +58,7 @@ eig_values_trans
 # Part 9, what types of data are these values?
 typeof(eig_values_mat$values)
 typeof(eig_values_mat$vectors)
-# Complex
+
 
 ```
 
