@@ -1,0 +1,132 @@
+---
+title: "Homework5"
+author: "Noah W.K. Mattheis"
+date: "2025-02-12"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Question 1
+```{r}
+set.seed(120)
+# Part 1, creating a value that is an int between 3 and 10
+n_dims <- sample(3:10, 1)
+
+# Part 2, creating a vector of ints of length 1 to n_dims^2
+my_vec <- 1:(n_dims^2)
+my_vec
+
+# Part 3, using sample to shuffle the vector
+shuffled_vec <- sample(my_vec)
+shuffled_vec
+
+# Part 4 and 5, creating a matrix from this vector and then printing it
+my_matrix <- matrix(shuffled_vec, nrow = n_dims, ncol = n_dims)
+my_matrix
+
+# Part 6, Transpose Matrix I.E. swap col and row positions of elements 
+trans_mat <- t(my_matrix)
+trans_mat
+
+# Part 7, calculate sum and mean of elements of first and last row
+sum(trans_mat[1,], trans_mat[n_dims,])
+mean(trans_mat[1,])
+mean(trans_mat[n_dims,])
+mean_trans_mat <- sum(trans_mat[1,], trans_mat[n_dims,])/(2*n_dims)
+mean_trans_mat
+sum(my_matrix[1,], my_matrix[n_dims,])
+mean(my_matrix[1,])
+mean(my_matrix[n_dims,])
+mean_mat <- sum(my_matrix[1,], my_matrix[n_dims,])/(2*n_dims)
+mean_mat
+
+# Part 8, using eigen() function on matrix
+eig_values_mat <- eigen(my_matrix)
+eig_values_mat
+eig_values_trans <- eigen(trans_mat)
+eig_values_trans
+
+# Values in this are the Eigen Values of X
+# Vectors are the Eigen Vectors of X for each col
+
+# Part 9, what types of data are these values?
+typeof(eig_values_mat$values)
+typeof(eig_values_mat$vectors)
+# Complex
+
+```
+
+
+# Question 2
+```{r}
+# Part 1, creating a 4x4 matrix filled with rand unif values
+my_matrix <- matrix(runif(16), nrow = 4, ncol = 4)
+my_matrix
+
+# Part 2, Creating a vector of boolean values using a list of rand values
+rand_vec <- runif(100, 0, 1)
+my_logic <- rand_vec < 0.5
+my_logic
+
+# Part 3, creating a list of letters called my_letters
+my_letters <- list(letters)
+my_letters
+typeof(my_letters)
+
+my_letters <- letters
+my_letters
+typeof(letters)
+
+# Part 4, new list with elements [2,2] of the matrix, 2nd element of my_logic, and 2nd element of my_letters
+# Part 5, showing type of data values of this list
+combined_list <- list(my_matrix[2,2], my_logic[2], my_letters[2])
+combined_list
+typeof(combined_list[1])
+typeof(combined_list[2])
+typeof(combined_list[3])
+
+unrolled_list <- unlist(combined_list)
+typeof(unrolled_list)
+typeof(unrolled_list[1])
+typeof(unrolled_list[2])
+typeof(unrolled_list[3])
+unrolled_list
+
+# Part 6, creating list using c()
+
+comb_list2 <- c(my_matrix[2,2], my_logic[2], my_letters[2])
+comb_list2
+typeof(comb_list2[1])
+typeof(comb_list2[2])
+typeof(comb_list2[3])
+
+```
+
+# Question 3
+```{r}
+# Part 1, creating data frame with my_unis and my_letters, where my_unis is 26 elements uni dist between 0 and 10 and my_letters is a random list of all capital letters
+my_unis <- runif(26, min = 0, max = 10)
+my_unis
+my_letters <- sample(LETTERS)
+my_letters
+d_frame <- data.frame(col = my_unis, rows = my_letters)
+d_frame
+
+# Part 2, turning 4 random rows in my_unis into NA
+d_frame[sample(1:26, 4, replace = TRUE),1] <- NA # Specify to not repeat here
+d_frame$col
+
+# Part 2.3, finding the positions of NA values
+which(!complete.cases(d_frame$col)) # find NA slots
+
+# Part 3, sorting data frame alphabetically
+d_frame <- d_frame[order(d_frame$rows),]
+d_frame
+
+# Part 4, calc column mean for first variable, my_unis
+d_frame[complete.cases(d_frame$col),1]
+mean(d_frame[complete.cases(d_frame$col),1])
+```
