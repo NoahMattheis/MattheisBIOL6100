@@ -137,6 +137,7 @@ typeof(weird_vec) # confirms list of Integers
 
 pos_weird_vec <- (weird_vec %% 2) == 0 | (weird_vec %% 7) == 0 | (weird_vec %% 3) == 0
 # The above method looks for values in the last the give 0 as a remainder when divided by 2, 3, or 7 - ensuring we only have numbers divisible by any of these numbers
-vec_2_3_7 <- weird_vec[pos_weird_vec]
+pos_weird_vec
+vec_2_3_7 <- weird_vec[!pos_weird_vec]
 print(vec_2_3_7)
 ```
