@@ -44,3 +44,7 @@ This assignment is based around manipulation and understanding of Atomic Vectors
 
 This assignment revolves around creation and manipulation of data in lists and data frames
 
+#### Week 6
+[Homework 6](Homework6.html)
+
+This assignment revolves around creation of a fake data set to use in statistical analysis and testing. This assignment focuses on data creation, testing, and for loop mechanics, with some if statements as well

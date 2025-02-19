@@ -1,0 +1,323 @@
+---
+title: "Homework6"
+author: "Noah W.K. Mattheis"
+date: "2025-02-19"
+output: 
+  html_document: 
+    highlight: tango
+    theme: cosmo
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Creating Fake Data Sets to Explore Hypotheses
+
+## Fake Hypothesis
+H0: People in colder regions and warmer regions have same resilience to flu
+
+H1: People in colder regions are more resilient to flu then people in warmer regions
+
+For this test, will be looking at data from 2023 to 2024, for months Oct, Nov, and Dec
+High ILI Activity means that large proportion of patient visits are due to influenza like symptoms 
+
+In data, when assigning states, 1 = warmer region and 2 = colder region
+
+## Setting up fake data to test
+
+```{r fake_data}
+# Declaring Means and Standard Deviations of samples
+
+# mean and standard deviation will not be negative here as avg number of flu cases present should be positive, 0 at least in a wildly healthy world
+
+mean1 = 30
+
+stdev1 = 4
+
+# Creating random normal samples based on means and standard deviations
+
+flu_cases <- rnorm(100,
+                   mean = mean1,
+                   sd = stdev1)
+
+flu_cases
+
+# Creating data set with descriptive columns based on generated samples
+
+flu_data <- data.frame(flu_cases)
+
+# Randomly assign categorical
+flu_data$states <- sample(c(1,2))
+flu_data
+
+# Creating Var of data and adding that to data <- double check, unsure if he wants us to provide a var or find it
+
+flu_data$variance <- var(flu_cases)
+
+flu_data
+
+```
+
+## Performing ANOVA/Hypothesis Testing
+
+Here we will test our fake data using ANOVA
+
+```{r}
+
+flu_data_aov <- aov(flu_cases~states, data = flu_data)
+summary(flu_data_aov)
+
+```
+
+## Using for loops to test different parameters
+
+Here we are going to set up for loops to iterate through other parameters with the data, seeing how much we need to achieve a p-value < 0.05
+
+```{r}
+
+n = 1000
+count = 0
+smallest_sample_size = 0
+
+seq_5 <- seq(1, n, by = 5)
+seq_10 <- seq(1, n, by = 10)
+
+
+for (i in 1:length(seq_5)) {
+  flu_cases <- (rnorm(seq_5[i],
+                   mean = mean1,
+                   sd = stdev1))
+  flu_data <- data.frame(flu_cases)
+  flu_data$states <- sample(c(1,2), length(flu_cases), replace = TRUE)
+  flu_data$variance <- var(flu_cases)
+  
+  flu_data_aov <- aov(flu_cases~states, data = flu_data)
+  flu_data_sum <- summary(flu_data_aov)
+  cat("\n","The sample size is ->", seq_5[i], "\n")
+  cat("The p-value is ->", flu_data_sum[[1]]$`Pr(>F)`[1], "\n")
+  
+  if (i > 1 & count == 0) {
+     if (flu_data_sum[[1]]$`Pr(>F)`[1] < 0.05) {
+    smallest_sample_size = seq_5[i]
+     }
+  }
+  
+  if (i > 1) {
+    if (flu_data_sum[[1]]$`Pr(>F)`[1] < 0.05) {
+      count = count + 1
+     cat("There is a signifact difference between colder and warmer region flu cases at a sample size of ", seq_5[i], "with a p-value of ", flu_data_sum[[1]]$`Pr(>F)`[1], "\n")
+      }
+    
+  }
+  cat("Total signifcant flu cases ", count, "out of ", i, "trials", "\n") 
+  cat("Smallest sample size for significant difference", smallest_sample_size, "\n")
+}
+
+# Need to reset counter for each loop
+count = 0
+
+for (i in 1:length(seq_10)) {
+  flu_cases <- (rnorm(seq_10[i],
+                   mean = mean1,
+                   sd = stdev1))
+  flu_data <- data.frame(flu_cases)
+  flu_data$states <- sample(c(1,2), length(flu_cases), replace = TRUE)
+  flu_data$variance <- var(flu_cases)
+  
+  flu_data_aov <- aov(flu_cases~states, data = flu_data)
+  flu_data_sum <- summary(flu_data_aov)
+  cat("\n","The sample size is ->", seq_10[i], "\n")
+  cat("The p-value is ->", flu_data_sum[[1]]$`Pr(>F)`[1], "\n")
+  
+  if (i > 1 & count == 0) {
+     if (flu_data_sum[[1]]$`Pr(>F)`[1] < 0.05) {
+    smallest_sample_size = seq_10[i]
+     }
+  }
+  
+ if (i > 1) {
+    if (flu_data_sum[[1]]$`Pr(>F)`[1] < 0.05) {
+    count = count + 1
+     cat("There is a signifact difference between colder and warmer region flu cases at a sample size of ", seq_10[i], "with a p-value of ", flu_data_sum[[1]]$`Pr(>F)`[1], "\n")
+      }
+    
+  }
+  cat("Total signifcant flu cases ", count, "out of ", i, "trials", "\n")
+  cat("Smallest sample size for significant difference", smallest_sample_size, "\n")
+} 
+
+```
+
+Here we can see that as we alter the sample size and iterate through different sample sizes, we get close to having significant differences but it is not likely to happen (about 5 - 15% of the time). 
+Now we will use loops to alter Mean and Standard Deviation to see if we can get significant changes. 
+
+First we will look at the mean:
+```{r}
+
+n = 1000
+count = 0
+smallest_mean_size = 0
+
+seq_5 <- seq(1, n, by = 5)
+seq_10 <- seq(1, n, by = 10)
+
+
+for (i in 1:length(seq_5)) {
+  flu_cases <- (rnorm(n,
+                   mean = seq_5[i],
+                   sd = stdev1))
+  flu_data <- data.frame(flu_cases)
+  flu_data$states <- sample(c(1,2), length(flu_cases), replace = TRUE)
+  flu_data$variance <- var(flu_cases)
+  
+  flu_data_aov <- aov(flu_cases~states, data = flu_data)
+  flu_data_sum <- summary(flu_data_aov)
+  cat("\n","The mean is ->", seq_5[i], "\n")
+  cat("The p-value is ->", flu_data_sum[[1]]$`Pr(>F)`[1], "\n")
+  
+  if (i > 1 & count == 0) {
+     if (flu_data_sum[[1]]$`Pr(>F)`[1] < 0.05) {
+    smallest_mean_size = seq_5[i]
+     }
+  }
+  
+  if (i > 1) {
+    if (flu_data_sum[[1]]$`Pr(>F)`[1] < 0.05) {
+      count = count + 1
+     cat("There is a signifact difference between colder and warmer region flu cases at a mean value of ", seq_5[i], "with a p-value of ", flu_data_sum[[1]]$`Pr(>F)`[1], "\n")
+      }
+    
+  }
+  cat("Total signifcant flu cases ", count, "out of ", i, "trials", "\n") 
+  cat("Smallest mean for significant difference", smallest_mean_size, "\n")
+}
+
+count = 0
+
+for (i in 1:length(seq_10)) {
+  flu_cases <- (rnorm(n,
+                   mean = seq_10[i],
+                   sd = stdev1))
+  flu_data <- data.frame(flu_cases)
+  flu_data$states <- sample(c(1,2), length(flu_cases), replace = TRUE)
+  flu_data$variance <- var(flu_cases)
+  
+  flu_data_aov <- aov(flu_cases~states, data = flu_data)
+  flu_data_sum <- summary(flu_data_aov)
+  cat("\n","The mean is ->", seq_10[i], "\n")
+  cat("The p-value is ->", flu_data_sum[[1]]$`Pr(>F)`[1], "\n")
+  
+  if (i > 1) {
+    if (flu_data_sum[[1]]$`Pr(>F)`[1] < 0.05) {
+      count = count + 1
+     cat("There is a signifact difference between colder and warmer region flu cases at a mean value of ", seq_10[i], "with a p-value of ", flu_data_sum[[1]]$`Pr(>F)`[1], "\n")
+      }
+    
+  }
+  cat("Total signifcant flu cases ", count, "out of ", i, "trials", "\n") 
+  cat("Smallest mean for significant difference", smallest_mean_size, "\n")
+}
+
+```
+
+Now we will look at altering the standard deviation:
+
+```{r}
+
+
+n = mean1
+count = 0
+smallest_stdev_size = 0
+
+seq_5 <- seq(1, n, by = 5)
+seq_10 <- seq(1, n, by = 10)
+
+
+for (i in 1:length(seq_5)) {
+  flu_cases <- (rnorm(n,
+                   mean = mean1,
+                   sd = seq_5[i]))
+  flu_data <- data.frame(flu_cases)
+  flu_data$states <- sample(c(1,2), length(flu_cases), replace = TRUE)
+  flu_data$variance <- var(flu_cases)
+  
+  flu_data_aov <- aov(flu_cases~states, data = flu_data)
+  flu_data_sum <- summary(flu_data_aov)
+  cat("\n","The standard deviation is ->", seq_5[i], "\n")
+  cat("The p-value is ->", flu_data_sum[[1]]$`Pr(>F)`[1], "\n")
+  
+  if (i > 1 & count == 0) {
+     if (flu_data_sum[[1]]$`Pr(>F)`[1] < 0.05) {
+    smallest_stdev_size = seq_5[i]
+     }
+  }
+  
+  if (i > 1) {
+    if (flu_data_sum[[1]]$`Pr(>F)`[1] < 0.05) {
+      count = count + 1
+     cat("There is a signifact difference between colder and warmer region flu cases at a stdev value of ", smallest_stdev_size, "with a p-value of ", flu_data_sum[[1]]$`Pr(>F)`[1], "\n")
+      }
+    
+  }
+  cat("Total signifcant flu cases ", count, "out of ", i, "trials", "\n") 
+  cat("Smallest standard deviation size for significant difference", smallest_stdev_size, "\n")
+}
+
+count = 0
+
+
+for (i in 1:length(seq_10)) {
+  flu_cases <- (rnorm(n,
+                   mean = mean1,
+                   sd = seq_10[i]))
+  flu_data <- data.frame(flu_cases)
+  flu_data$states <- sample(c(1,2), length(flu_cases), replace = TRUE)
+  flu_data$variance <- var(flu_cases)
+  
+  flu_data_aov <- aov(flu_cases~states, data = flu_data)
+  flu_data_sum <- summary(flu_data_aov)
+  cat("\n","The standard deviation is ->", seq_10[i], "\n")
+  cat("The p-value is ->", flu_data_sum[[1]]$`Pr(>F)`[1], "\n")
+  
+  if (i > 1 & count == 0) {
+     if (flu_data_sum[[1]]$`Pr(>F)`[1] < 0.05) {
+    smallest_stdev_size = seq_10[i]
+     }
+  }
+  
+  if (i > 1) {
+    if (flu_data_sum[[1]]$`Pr(>F)`[1] < 0.05) {
+      count = count + 1
+     cat("There is a signifact difference between colder and warmer region flu cases at a stdev value of ", seq_10[i], "with a p-value of ", flu_data_sum[[1]]$`Pr(>F)`[1], "\n")
+      }
+    
+  }
+  cat("Total signifcant flu cases ", count, "out of ", i, "trials", "\n") 
+  cat("Smallest standard deviation size for significant difference", smallest_stdev_size, "\n")
+}
+
+```
+
+Looking back at our original data, set up at the top, what is the smallest sample size I could do to get a significant value? 
+
+After numerous runs, the best I got was a sample size of 40, but this was due to random generation, you can see that we run it with 40 as the sample size, we might not repeat this result.
+Side note - this is why set.seed is helpful for sharing code/data so we can repeat results. 
+In this example, we are working with random data every time
+
+```{r}
+flu_cases <- (rnorm(40,
+                   mean = mean1,
+                   sd = stdev1))
+  flu_data <- data.frame(flu_cases)
+  flu_data$states <- sample(c(1,2), length(flu_cases), replace = TRUE)
+  flu_data$variance <- var(flu_cases)
+  
+  flu_data_aov <- aov(flu_cases~states, data = flu_data)
+  flu_data_sum <- summary(flu_data_aov)
+  flu_data_sum
+
+```
+
+We can see all in all that through manipulation of mean and sample size, we notice about 5-15% of the runs will result in a significant difference of flu cases between warmer and colder regions. 
+Switching standard deviation gives us about 0-33% of the runs result in significant difference.
