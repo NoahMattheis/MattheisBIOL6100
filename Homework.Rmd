@@ -48,3 +48,8 @@ This assignment revolves around creation and manipulation of data in lists and d
 [Homework 6](Homework6.html)
 
 This assignment revolves around creation of a fake data set to use in statistical analysis and testing. This assignment focuses on data creation, testing, and for loop mechanics, with some if statements as well
+
+#### Week 7
+[Homework 7](Homework7.html)
+
+This assignment revolves around creating a data set and then using piping and other tidyverse/dplyr functions to manipulate said data set

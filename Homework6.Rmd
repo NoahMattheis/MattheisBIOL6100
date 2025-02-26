@@ -41,7 +41,7 @@ flu_cases <- rnorm(100,
                    mean = mean1,
                    sd = stdev1)
 
-flu_cases
+head(flu_cases)
 
 # Creating data set with descriptive columns based on generated samples
 
@@ -49,13 +49,13 @@ flu_data <- data.frame(flu_cases)
 
 # Randomly assign categorical
 flu_data$states <- sample(c(1,2))
-flu_data
+head(flu_data)
 
 # Creating Var of data and adding that to data <- double check, unsure if he wants us to provide a var or find it
 
 flu_data$variance <- var(flu_cases)
 
-flu_data
+head(flu_data)
 
 ```
 
@@ -74,7 +74,7 @@ summary(flu_data_aov)
 
 Here we are going to set up for loops to iterate through other parameters with the data, seeing how much we need to achieve a p-value < 0.05
 
-```{r}
+```{r, eval = FALSE}
 
 n = 1000
 count = 0
@@ -153,7 +153,7 @@ Here we can see that as we alter the sample size and iterate through different s
 Now we will use loops to alter Mean and Standard Deviation to see if we can get significant changes. 
 
 First we will look at the mean:
-```{r}
+```{r, eval=FALSE}
 
 n = 1000
 count = 0
@@ -223,7 +223,7 @@ for (i in 1:length(seq_10)) {
 
 Now we will look at altering the standard deviation:
 
-```{r}
+```{r, eval=FALSE}
 
 
 n = mean1
