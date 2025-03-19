@@ -1,0 +1,216 @@
+---
+title: "Homework8"
+author: "Noah W.K. Mattheis"
+date: "2025-03-19"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#### Starting with our data set:
+```{r}
+
+z <- read.table("synthetic_cannabis_use.csv",header=TRUE,sep=",")
+z <- subset(z, synth_days != 0)
+str(z)
+summary(z)
+
+```
+
+#### Opening Library
+```{r}
+
+library(ggplot2) # for graphics
+library(MASS) # for maximum likelihood estimation
+
+```
+
+#### Reading in a data vector for testing distributions
+```{r}
+
+# quick and dirty, a truncated normal distribution to work on the solution set
+
+# z <- rnorm(n=3000,mean=0.2)
+# z <- data.frame(1:3000,z)
+# names(z) <- list("ID","synth_days")
+# z <- z[z$synth_days>0,]
+# str(z)
+# summary(z$synth_days)
+
+```
+
+#### Plot Histogram of Data
+Plot a histogram of the data, using a modification of the code from lecture. Here we are switching from qplot to ggplot for more graphics options. We are also rescaling the y axis of the histogram from counts to density, so that the area under the histogram equals 1.0.
+```{r}
+
+p1 <- ggplot(data=z, 
+             aes(x=synth_days, y=after_stat(density))) +
+  geom_histogram(color="grey60",fill="cornsilk",linewidth=0.2) 
+print(p1)
+
+```
+
+#### Add Empyrical Density Curve - adding a Kernel Density Plot
+This is an empirical curve that is fitted to the data. It does not assume any particular probability distribution, but it smooths out the shape of the histogram:
+```{r}
+
+p1 <-  p1 +  geom_density(linetype="dotted",size=0.75)
+print(p1)
+
+```
+
+#### Get Maximum Likelihood Parameters for Normal distribution
+Next, fit a normal distribution to your data and grab the maximum likelihood estimators of the two parameters of the normal, the mean and the variance:
+```{r}
+
+normPars <- fitdistr(z$synth_days,"normal")
+print(normPars)
+str(normPars)
+normPars$estimate["mean"] # note structure of getting a named attribute
+
+```
+
+#### Plot Normal Probability Density:
+Now let’s call the dnorm function inside ggplot’s stat_function to generate the probability density for the normal distribution. Read about stat_function in the help system to see how you can use this to add a smooth function to any ggplot. Note that we first get the maximum likelihood parameters for a normal distribution fitted to thse data by calling fitdistr. Then we pass those parameters (meanML and sdML to stat_function):
+```{r}
+
+meanML <- normPars$estimate["mean"]
+sdML <- normPars$estimate["sd"]
+
+xval <- seq(0,max(z$synth_days),len=length(z$synth_days))
+des_xval <- seq(max(z$synth_days), 0 ,len=length(z$synth_days))
+
+ stat <- stat_function(aes(x = xval, y = ..y..), fun = dnorm, colour="red", n = length(z$synth_days), args = list(mean = meanML, sd = sdML))
+ p1 + stat
+
+```
+
+#### Plot Exponential Probability Density 
+```{r}
+
+expoPars <- fitdistr(z$synth_days,"exponential")
+rateML <- expoPars$estimate["rate"]
+
+stat2 <- stat_function(aes(x = xval, y = ..y..), fun = dexp, colour="blue", n = length(z$synth_days), args = list(rate=rateML))
+ p1 + stat + stat2
+
+p_temp <- ggplot(data=z, 
+             aes(x=reorder(synth_days, synth_days), y=after_stat(density))) +
+  geom_histogram(color="grey60",fill="cornsilk",linewidth=0.2) 
+print(p_temp) 
+  
+stat2_des <- stat_function(aes(x = des_xval, y = ..y..), fun = dexp, colour="blue", n = length(z$synth_days), args = list(rate=rateML))
+ p_temp + stat2_des
+
+
+```
+
+#### Plot Uniform Probability Density
+For the uniform, we don’t need to use fitdistr because the maximum likelihood estimators of the two parameters are just the minimum and the maximum of the data:
+```{r}
+
+stat3 <- stat_function(aes(x = xval, y = ..y..), fun = dunif, colour="darkgreen", n = length(z$synth_days), args = list(min=min(z$synth_days), max=max(z$synth_days)))
+ p1 + stat + stat2 + stat3
+
+```
+
+#### Plot Gamma Probability Density
+```{r}
+
+gammaPars <- fitdistr(z$synth_days,"gamma")
+
+str(z)
+shapeML <- gammaPars$estimate["shape"]
+rateML <- gammaPars$estimate["rate"]
+
+stat4 <- stat_function(aes(x = xval, y = ..y..), fun = dgamma, colour="brown", n = length(z$synth_days), args = list(shape=shapeML, rate=rateML))
+ p1 + stat + stat2 + stat3 + stat4
+
+```
+
+#### Plot Beta Probability Density
+This one has to be shown in its own plot because the raw data must be rescaled so they are between 0 and 1, and then they can be compared to the beta.
+```{r}
+
+pSpecial <- ggplot(data=z, aes(x=synth_days/(max(synth_days + 0.1)), y=..density..)) +
+  geom_histogram(color="grey60",fill="cornsilk",size=0.2) + 
+  xlim(c(0,1)) +
+  geom_density(size=0.75,linetype="dotted")
+
+betaPars <- fitdistr(x=z$synth_days/max(z$synth_days + 0.1),start=list(shape1=1,shape2=2),"beta")
+shape1ML <- betaPars$estimate["shape1"]
+shape2ML <- betaPars$estimate["shape2"]
+
+statSpecial <- stat_function(aes(x = xval, y = ..y..), fun = dbeta, colour="orchid", n = length(z$synth_days), args = list(shape1=shape1ML,shape2=shape2ML))
+pSpecial + statSpecial
+
+```
+
+#### Plotting data to distribution of best fit using, might be biased picking, but torn between norm and exponential, so might try both
+
+Starting first with Normal and comparing to original data
+```{r}
+# Starting with Normal Simulated Data, using the mean from normPars from original data
+norm_data <- rnorm(n=1743,mean=normPars$estimate["mean"])
+norm_data <- data.frame(1:1743,norm_data)
+names(norm_data) <- list("ID","synth_days")
+norm_data <- norm_data[norm_data$synth_days>0,]
+str(norm_data)
+summary(norm_data$synth_days)
+
+# Gettting new maximum likelihood parameters for new data set
+normPars2 <- fitdistr(norm_data$synth_days,"normal")
+print(normPars2)
+str(normPars2)
+normPars2$estimate["mean"]
+
+# Graphing normal distribution
+p2 <- ggplot(data=norm_data, 
+             aes(x=synth_days, y=after_stat(density))) +
+  geom_histogram(color="grey60",fill="cornsilk",linewidth=0.2) 
+print(p2)
+
+meanML <- normPars2$estimate["mean"]
+sdML <- normPars2$estimate["sd"]
+
+xval <- seq(0,max(norm_data$synth_days),len=length(norm_data$synth_days))
+
+ stat_1 <- stat_function(aes(x = xval, y = ..y..), fun = dnorm, colour="red", n = length(norm_data$synth_days), args = list(mean = meanML, sd = sdML))
+ p2 + stat_1
+ p1 + stat
+
+```
+
+Now trying exponential and comparing to original data
+```{r}
+# Exp Simulated Data, using the rate from expoPars from original data
+exp_data <- rexp(n=1743,rate=expoPars$estimate["rate"])
+exp_data <- data.frame(1:1743,exp_data)
+names(exp_data) <- list("ID","synth_days")
+exp_data <- exp_data[exp_data$synth_days>0,]
+str(exp_data)
+summary(exp_data$synth_days)
+
+# Gettting new maximum likelihood parameters for new data set
+
+p3 <- ggplot(data=exp_data, 
+             aes(x=synth_days, y=after_stat(density))) +
+  geom_histogram(color="grey60",fill="cornsilk",linewidth=0.2) 
+print(p3)
+
+expoPars2 <- fitdistr(exp_data$synth_days,"exponential")
+rateML2 <- expoPars2$estimate["rate"]
+
+stat_2 <- stat_function(aes(x = xval, y = ..y..), fun = dexp, colour="blue", n = length(z$synth_days), args = list(rate=rateML2))
+ p3 + stat_2
+
+ p1 + stat2
+
+
+```
+
+So far, from looking at all these distributions, it seems safe to say that neither of these are distributions of best fit for the original data. Exponential predicts into the future, giving us an x axis greater than the range of days our original data goes. The normal distributions focuses too much on the average and does not give the proper acknowledgement of the data towards the end
+
+

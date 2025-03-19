@@ -53,3 +53,8 @@ This assignment revolves around creation of a fake data set to use in statistica
 [Homework 7](Homework7.html)
 
 This assignment revolves around creating a data set and then using piping and other tidyverse/dplyr functions to manipulate said data set
+
+#### Week 8
+[Homework 8](Homework8.html)
+
+This assignment revolves around comparing histograms of continuous or integer data types to respective probability density function for different statistical distributions
