@@ -58,3 +58,8 @@ This assignment revolves around creating a data set and then using piping and ot
 [Homework 8](Homework8.html)
 
 This assignment revolves around comparing histograms of continuous or integer data types to respective probability density function for different statistical distributions
+
+#### Week 9
+[Homework 9](NWKM_Homework9_BIOL6100.zip)
+
+This assignment revolves around downloading a series of data sets online, creating pseudo-code/user-made-functions to clean the data, obtain certain counts, regression statistics, and histograms

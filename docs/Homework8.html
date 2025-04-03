@@ -294,7 +294,19 @@ str(z)</code></pre>
 <div id="opening-library" class="section level4">
 <h4>Opening Library</h4>
 <pre class="r"><code>library(ggplot2) # for graphics
-library(MASS) # for maximum likelihood estimation</code></pre>
+library(MASS) # for maximum likelihood estimation
+library(dplyr)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:MASS&#39;:
+## 
+##     select</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
 </div>
 <div id="reading-in-a-data-vector-for-testing-distributions"
 class="section level4">
@@ -378,6 +390,7 @@ stat_function):</p>
 sdML &lt;- normPars$estimate[&quot;sd&quot;]
 
 xval &lt;- seq(0,max(z$synth_days),len=length(z$synth_days))
+des_xval &lt;- seq(max(z$synth_days), 0 ,len=length(z$synth_days))
 
  stat &lt;- stat_function(aes(x = xval, y = ..y..), fun = dnorm, colour=&quot;red&quot;, n = length(z$synth_days), args = list(mean = meanML, sd = sdML))
  p1 + stat</code></pre>
@@ -398,6 +411,14 @@ stat2 &lt;- stat_function(aes(x = xval, y = ..y..), fun = dexp, colour=&quot;blu
  p1 + stat + stat2</code></pre>
 <pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
 <p><img src="Homework8_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<pre class="r"><code># p_temp &lt;- ggplot(data=z, 
+#             aes(x= arrange(xval, desc(z$synth_days)), y=after_stat(density)))
+# print(p_temp) 
+  
+# stat2_des &lt;- stat_function(aes(x = des_xval, y = ..y..), fun = dexp, colour=&quot;blue&quot;, n = length(z$synth_days), args = list(rate=rateML))
+# p_temp + stat2_des
+
+# arrange(xval, desc(z$synth_days))</code></pre>
 </div>
 <div id="plot-uniform-probability-density" class="section level4">
 <h4>Plot Uniform Probability Density</h4>
@@ -521,32 +542,32 @@ norm_data &lt;- norm_data[norm_data$synth_days&gt;0,]
 str(norm_data)</code></pre>
 <pre><code>## &#39;data.frame&#39;:    1743 obs. of  2 variables:
 ##  $ ID        : int  1 2 3 4 5 6 7 8 9 10 ...
-##  $ synth_days: num  16 14.5 16.9 16.8 18.8 ...</code></pre>
+##  $ synth_days: num  16.6 19.3 15.2 18.8 15.9 ...</code></pre>
 <pre class="r"><code>summary(norm_data$synth_days)</code></pre>
 <pre><code>##    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-##   12.88   15.94   16.66   16.65   17.37   19.71</code></pre>
+##   13.13   15.92   16.58   16.60   17.27   19.64</code></pre>
 <pre class="r"><code># Gettting new maximum likelihood parameters for new data set
 normPars2 &lt;- fitdistr(norm_data$synth_days,&quot;normal&quot;)
 print(normPars2)</code></pre>
 <pre><code>##       mean           sd     
-##   16.64994731    1.03156834 
-##  ( 0.02470867) ( 0.01747167)</code></pre>
+##   16.60254589    1.02044202 
+##  ( 0.02444216) ( 0.01728322)</code></pre>
 <pre class="r"><code>str(normPars2)</code></pre>
 <pre><code>## List of 5
-##  $ estimate: Named num [1:2] 16.65 1.03
+##  $ estimate: Named num [1:2] 16.6 1.02
 ##   ..- attr(*, &quot;names&quot;)= chr [1:2] &quot;mean&quot; &quot;sd&quot;
-##  $ sd      : Named num [1:2] 0.0247 0.0175
+##  $ sd      : Named num [1:2] 0.0244 0.0173
 ##   ..- attr(*, &quot;names&quot;)= chr [1:2] &quot;mean&quot; &quot;sd&quot;
-##  $ vcov    : num [1:2, 1:2] 0.000611 0 0 0.000305
+##  $ vcov    : num [1:2, 1:2] 0.000597 0 0 0.000299
 ##   ..- attr(*, &quot;dimnames&quot;)=List of 2
 ##   .. ..$ : chr [1:2] &quot;mean&quot; &quot;sd&quot;
 ##   .. ..$ : chr [1:2] &quot;mean&quot; &quot;sd&quot;
 ##  $ n       : int 1743
-##  $ loglik  : num -2527
+##  $ loglik  : num -2508
 ##  - attr(*, &quot;class&quot;)= chr &quot;fitdistr&quot;</code></pre>
 <pre class="r"><code>normPars2$estimate[&quot;mean&quot;]</code></pre>
 <pre><code>##     mean 
-## 16.64995</code></pre>
+## 16.60255</code></pre>
 <pre class="r"><code># Graphing normal distribution
 p2 &lt;- ggplot(data=norm_data, 
              aes(x=synth_days, y=after_stat(density))) +
@@ -575,10 +596,10 @@ exp_data &lt;- exp_data[exp_data$synth_days&gt;0,]
 str(exp_data)</code></pre>
 <pre><code>## &#39;data.frame&#39;:    1743 obs. of  2 variables:
 ##  $ ID        : int  1 2 3 4 5 6 7 8 9 10 ...
-##  $ synth_days: num  45 11.52 2.6 12.65 9.16 ...</code></pre>
+##  $ synth_days: num  0.444 3.567 0.405 5.902 4.756 ...</code></pre>
 <pre class="r"><code>summary(exp_data$synth_days)</code></pre>
 <pre><code>##      Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
-##   0.00512   4.48957  10.79958  16.70456  24.05081 135.82258</code></pre>
+##   0.01133   5.10192  11.98102  16.97108  23.35961 135.11902</code></pre>
 <pre class="r"><code># Gettting new maximum likelihood parameters for new data set
 
 p3 &lt;- ggplot(data=exp_data, 

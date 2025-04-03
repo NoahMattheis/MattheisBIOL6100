@@ -24,6 +24,7 @@ summary(z)
 
 library(ggplot2) # for graphics
 library(MASS) # for maximum likelihood estimation
+library(dplyr)
 
 ```
 
@@ -96,15 +97,15 @@ rateML <- expoPars$estimate["rate"]
 stat2 <- stat_function(aes(x = xval, y = ..y..), fun = dexp, colour="blue", n = length(z$synth_days), args = list(rate=rateML))
  p1 + stat + stat2
 
-p_temp <- ggplot(data=z, 
-             aes(x=reorder(synth_days, synth_days), y=after_stat(density))) +
-  geom_histogram(color="grey60",fill="cornsilk",linewidth=0.2) 
-print(p_temp) 
+# p_temp <- ggplot(data=z, 
+#             aes(x= arrange(xval, desc(z$synth_days)), y=after_stat(density)))
+# print(p_temp) 
   
-stat2_des <- stat_function(aes(x = des_xval, y = ..y..), fun = dexp, colour="blue", n = length(z$synth_days), args = list(rate=rateML))
- p_temp + stat2_des
+# stat2_des <- stat_function(aes(x = des_xval, y = ..y..), fun = dexp, colour="blue", n = length(z$synth_days), args = list(rate=rateML))
+# p_temp + stat2_des
 
-
+# arrange(xval, desc(z$synth_days))
+        
 ```
 
 #### Plot Uniform Probability Density
