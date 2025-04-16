@@ -1,0 +1,241 @@
+---
+title: "Homework10"
+author: "Noah W.K. Mattheis"
+date: "2025-04-09"
+output: 
+  html_document: 
+    highlight: tango
+    theme: cosmo
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Step 1 - Download/Upload Data
+
+Downloading dataset of choice from TidyTuesday - I am choosing Pokemon :D
+
+```{r}
+# Using R
+# Option 1: tidytuesdayR R package 
+## install.packages("tidytuesdayR")
+
+library(tidytuesdayR)
+
+tuesdata <- tidytuesdayR::tt_load('2025-04-01')
+## OR
+tuesdata <- tidytuesdayR::tt_load(2025, week = 13)
+
+pokemon_df <- tuesdata$pokemon_df
+
+# Option 2: Read directly from GitHub
+
+# pokemon_df <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/main/data/2025/2025-04-01/pokemon_df.csv')
+
+str(pokemon_df)
+
+```
+Looking at the data, it seems that we get the Pokemon's name, height, weight, type, BST Distribution, Base Experience for upon defeating said Pokemon, Generation ID, colors, image of the Pokemon, and egg group(s)
+
+## Step 2 - Visualize the Data
+
+Now time to practice our data plotting skills with this data
+
+Lets try a scatter pie chart
+```{r pressure, echo=FALSE}
+# Before graphin, need all libraries for plotting
+library(ggplot2)
+library(tidyverse)
+library(lubridate)
+library(ggridges) # ridge plots
+library(ggbeeswarm) # beeswarm plots
+library(GGally) # parallel coordinates plots
+library(ggpie) # pie charts
+library(ggmosaic) # mosaic plots
+library(scatterpie) # scatter pies on map
+library(waffle) # for waffle plots
+library(DescTools) # for converting table to long
+library(treemap) # for tree maps
+
+
+# First want to try a scatter pie plot
+bst <- pokemon_df$hp + pokemon_df$attack +
+  pokemon_df$defense + pokemon_df$special_attack +
+  pokemon_df$special_defense +
+  pokemon_df$speed
+
+
+# Originally wanted to compare against different generations, but need to tweak more
+
+p1 <- ggplot(data=pokemon_df) + 
+  scatterpie::geom_scatterpie(
+    aes(x=weight, y= height), # Tried using y = bst
+    pie_scale=1,
+    cols=c( "attack","speed")) + 
+   coord_fixed()
+  # scale_fill_manual(values=c("coral","grey95","grey90"))
+p1 # Shows attack compared to speed based on a pokemons weigth and height but this chart doesn't explain much - seems to show the heavier the pokemon the more attack it has compared to speed but that is about it
+
+# p1again <- ggplot(data=pokemon_df) + 
+#   scatterpie::geom_scatterpie(
+#     aes(x=type_1, y= type_2), # Tried using y = bst
+#     pie_scale=1,
+#     cols=c( "attack","speed")) + 
+#    coord_fixed()
+#   # scale_fill_manual(values=c("coral","grey95","grey90"))
+# p1again # gameplan here was to show stats based on types
+# Do I coerece types to be numeric?
+
+
+# Want to compare bst averages of pokemon in each generation 
+
+
+```
+
+Mosaic/Partition Charts
+```{r}
+
+# Trying a 1 to 2 Factor Partition Chart
+# Alright, I might have to make some calculations and for loops maybe? 
+
+# First creating variables I will need for further graphs, such as a base stat total column, an all types columns to combine type1 and type2 columns, and a freq count of unique type combinations
+# Creating all_type variable
+all_type <- ifelse(is.na(pokemon_df$type_2), pokemon_df$type_1, paste(pokemon_df$type_1,pokemon_df$type_2))
+
+# Function to alphabetically sort type strings
+standardize_types <- function(type_str) {
+  type_split <- unlist(strsplit(type_str, " "))
+  type_sorted <- sort(type_split)
+  paste(type_sorted, collapse = " ")
+}
+
+# Apply to the full list
+all_type_standardized <- sapply(all_type, standardize_types)
+
+# Check result
+head(data.frame(original = all_type, standardized = all_type_standardized), 15)
+
+# all_type <- if (is.na(pokemon_df$type_2)) {
+#   all_type <- pokemon_df$type_2
+# } else if {}
+
+pokemon_df$all_type <- c(all_type)
+
+pokemon_df$all_type_standardized <- c(all_type_standardized)
+
+pokemon_df$basestat <- c(bst)
+# Careful when using group_by and not calling ungroup, grouping will carry over if ungroup is not called
+pokemon_df <- pokemon_df %>%
+  group_by(all_type) %>%
+  mutate(Freq = n_distinct(pokemon))# Counts the number of distinct values within each group
+
+# Trying to get the top 10 most common pokemon types and pokemon in it but not getting there completely :/  
+df_top_10 <- pokemon_df %>%
+  ungroup()%>%
+  mutate(rank = rank(Freq, ties.method = "first")) %>%
+  filter(rank <= 10)
+
+
+
+# Seems that this chart shows the commonality of types - with Water being the most common and flying being the least common - at least in terms of type 1 which makes sense, there are very few mono flying types
+p2 <- ggplot(data = pokemon_df) +
+  geom_mosaic(aes(x = product(type_1), 
+                  fill=type_1),
+              divider=mosaic("v")) +
+  labs(title='mosaic v')
+p2 # Shows type commonality
+
+p3 <- ggplot(data = pokemon_df) +
+  geom_mosaic(aes(x = product(type_1, type_2), 
+                  fill=type_1),
+              divider=mosaic("v")) +
+  labs(title='mosaic v')
+p3 # tries to show all type combinations using type 1 as one axis and type 2 as another, comes out gross
+
+# Seems like we got it to show types per generation but only by type 1
+# NA For generation represents pokemon like megas or alt forms that have different stats, I wonder why they are left out? Especially pokemon like Meowstic with a female and male
+p4 <- ggplot(data = pokemon_df) +
+  geom_mosaic(aes(x = product(generation_id, type_1), 
+                  fill=type_1),
+              divider=mosaic("v")) +
+  labs(title='mosaic v')
+p4 # Shows type distribution per generation, can see gen 1 has little to no steel types and dark types
+
+
+
+# Now that we have a combined type variable, lets try this chart again with total type combinations
+# p4again <- ggplot(data = pokemon_df) +
+#   geom_mosaic(aes(x = product(generation_id, all_type), 
+#                   fill=all_type),
+#               divider=mosaic("v")) +
+#   labs(title='mosaic v')
+# p4again # Ok there are too many combinations - does not look good/cant even see it because of the legend
+
+```
+
+Ridgeline Plot
+```{r}
+
+# Here I can show Base Stat Total range per first Pokemon Type -> Cool
+p5 <- ggplot(data=pokemon_df) +
+  aes(x=basestat,y=type_1,fill=type_1) + 
+  ggridges::geom_density_ridges() +
+  ggridges::theme_ridges() 
+p5  
+
+# Trying again but with all types 
+# p5 <- ggplot(data=pokemon_df) +
+#   aes(x=basestat,y=all_type_standardized,fill=all_type_standardized) + 
+#   ggridges::geom_density_ridges() +
+#   ggridges::theme_ridges() 
+# p5  # too much info, want to change this for the first 10 most common types
+
+
+p5again <- ggplot(data=pokemon_df) +
+  aes(x=basestat,y=as.character(generation_id),fill=as.character(generation_id)) + 
+  ggridges::geom_density_ridges() +
+  ggridges::theme_ridges() 
+p5again  # got it to work with by generation by forcing the generation_id col to be a char and not numeric as it is a qualitative variable, not quantitative
+# Need to clean up NA, mega pokemon are just better than normal - whould've thought? that and for some reason alt rotom forms are also NA, same with Alolan forms which makes this data skewed/inaccurate
+# Also has totem pokemon - wild
+# Gen 7 has a larger average bst - power creep anyone? 
+
+```
+
+Waffle Plot
+```{r}
+
+# Creating a waffle plot to show distribution of number of pokemon per generation
+tabled_data <- as.data.frame(table(gen_id=pokemon_df$generation_id))
+
+p6 <- ggplot(data=tabled_data) +
+  aes(fill = gen_id, values = Freq) +
+ waffle::geom_waffle(n_rows = 15, size = 0.33, colour = "white") + 
+  coord_equal() +
+   theme_void()
+p6
+
+
+```
+Tree Map
+```{r}
+# Maybe using a tree map we can show overall commonality of types better
+
+
+treemap(dtf=pokemon_df,
+        index="type_1",
+        vSize="Freq",
+        type="index")  # rock flying being common is wild when there are 3 pok total
+
+treemap(dtf=pokemon_df,
+        index=c("type_1", "type_2"),
+        vSize="Freq",
+        type="index")  # rock flying being common is wild when there are 3 pok total
+
+treemap(dtf=pokemon_df,
+        index=c("all_type_standardized"),
+        vSize="Freq",
+        type="index")
+
+```

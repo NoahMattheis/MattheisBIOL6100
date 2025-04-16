@@ -1,0 +1,121 @@
+---
+title: "Homework9"
+author: "Noah W.K. Mattheis"
+date: "2025-03-26"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## 
+
+First step, load up proper libraries and packages
+
+```{r}
+# loading up libraries
+library(devtools)
+install_github("ngotelli/upscaler")
+library(upscaler)
+```
+
+Starting with pseudo-code, generate functions for 1) Cleaning the data for any empty/missing cases, 2) Extract the year from each file name, 3) Calculate Abundance for each year (Total number of individuals found), 4) Calculate Species Richness for each year(Number of unique species found), 5) Run a simple regression model for Species Richness (S) vs. Abundance for every year, 6) Generate histograms for both Abundance and Species Richness (S) and store the plots
+
+
+Creating Functions for For Loop for reading in data
+```{r}
+add_folder("Functions")
+build_function(c("clean_data",
+                 "get_abundance",
+                 "get_year",
+                 "species_richness",
+                 "simple_regression",
+                 "gen_hist"))
+
+# When calling back in functions, make sure to look into functions folder to see the name given to these functions
+source_batch("Functions")
+
+# Running each function template
+clean_data()
+gen_hist()
+get_abundance()
+get_year()
+simple_regression()
+species_richness()
+
+# Testing all the functions
+temp_extract <- get_year("C:/Users/noahw/OneDrive/Desktop/UVM/Spring 2025/BIOL 6100/R Code/MattheisBIOL6100/NEON_count-landbird (1)/NEON_count-landbird/NEON.D01.BART.DP1.10003.001.2015-06.basic.20250129T000730Z.RELEASE-2025", "*.brd_countdata.*")
+
+temp_extract
+placeholder <- read.csv(temp_extract)
+q <- clean_data(placeholder)
+class(placeholder)
+
+placeholder2 <- read.csv(temp_extract)
+species <- species_richness(placeholder2)
+abundance <- get_abundance(placeholder2)
+simple_regression(placeholder2, species, abundance)
+gen_hist(placeholder2, placeholder2$uid, placeholder2$scientificName)
+
+paste0("C:/Users/noahw/OneDrive/Desktop/UVM/Spring 2025/BIOL 6100/R Code/MattheisBIOL6100/NEON_count-landbird (1)/NEON_count-landbird/NEON.D01.BART.DP1.10003.001.20",15, "-06.basic.20250129T000730Z.RELEASE-2025")
+
+```
+
+Now, we uploaded some data from Neonscience.org and are working with the BART from years 2013 to 2023. Now is time to merge the countbird files for each year into one file together and use our pseudo-code and functions to help
+
+```{r}
+
+file_list <- list.files(path ="C:/Users/noahw/OneDrive/Desktop/UVM/Spring 2025/BIOL 6100/R Code/MattheisBIOL6100/NEON_count-landbird (1)/NEON_count-landbird" ) # set working directory to inside data file so you do not have to specify path
+file_list[2]
+
+temp_list <- list()
+new_data <- data_frame(
+  "year_name" = character(),
+  "spec_num" = numeric(),
+  "abundance_num" = numeric()
+)
+
+
+
+for (i in 1:length(file_list)) {
+  temp_list[i] <- get_year(paste0("C:/Users/noahw/OneDrive/Desktop/UVM/Spring 2025/BIOL 6100/R Code/MattheisBIOL6100/NEON_count-landbird (1)/NEON_count-landbird/NEON.D01.BART.DP1.10003.001.20",i + 14, "-06.basic.20250129T000730Z.RELEASE-2025"), ".brd_countdata.")
+  temp_list_name <- temp_list[i]
+  temp_list_name 
+  placeholder <- read.csv(unlist(temp_list[i]))
+  clean_placeholder <- clean_data(placeholder)
+  species <- species_richness(clean_placeholder)
+  abundance <- get_abundance(clean_placeholder)
+  new_data[i, "year_name"] <-  temp_list_name 
+  new_data[i, "spec_num"] <- abundance
+  new_data[i, "abundance_num"] <- species
+  
+  
+}
+
+head(new_data)
+
+# Need to extract p-value, adj r squared
+# look up how to pull out these values from a lm
+# then put them into a data frame
+
+simple_reg <- (simple_regression(new_data, 
+                                      new_data$spec_num, 
+                                      new_data$abundance_num))
+regression_data <- data.frame()
+
+
+simple_reg$coefficients[8]
+simple_reg$r.squared
+simple_reg$adj.r.squared
+
+regression_data <- c("p-value" = simple_reg$coefficients[8],
+"r squared" = simple_reg$r.squared,
+"adj r squared" = simple_reg$adj.r.squared)
+
+write.csv(regression_data, file = "regression_data")
+
+
+gen_hist(new_data, new_data$abundance_num, new_data$spec_num)
+
+```
